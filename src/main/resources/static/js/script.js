@@ -93,8 +93,10 @@ function userClick(event){
   const curSelectedUser = event.currentTarget;
   curSelectedUser.classList.add("active");
   const newMessageNoti = curSelectedUser.getElementsByClassName("new-message");
+  console.log(curSelectedUser)
+  console.log(newMessageNoti)
   if (newMessageNoti.length > 0){
-    curSelectedUser.removeChild(newMessageNoti);
+    curSelectedUser.removeChild(curSelectedUser.lastElementChild);
   }
   selectedUser = curSelectedUser.getAttribute("id");
   chatName.innerHTML = selectedUser;
@@ -116,7 +118,7 @@ function displayMessage(message){
   if (message.senderId === nickname){
     messageHTML = `
         <div class="message-data text-right">
-            <span class="message-data-time">${message.timestamp}</span>
+            <span class="message-data-time">${formatTimestamp(message.timestamp)}</span>
         </div>
         <div class="message my-message float-right">
             ${message.content}
@@ -125,7 +127,7 @@ function displayMessage(message){
   } else{
     messageHTML = `
         <div class="message-data">
-            <span class="message-data-time">${message.timestamp}</span>
+            <span class="message-data-time">${formatTimestamp(message.timestamp)}</span>
         </div>
         <div class="message other-message">
             ${message.content}
@@ -151,6 +153,18 @@ function sendMessage(event){
   displayMessage(messageObject);
   chatParent.scrollTop = chatParent.scrollHeight;
   messageInput.value = ""
+}
+
+function formatTimestamp(timestamp) {
+  const date = new Date(timestamp);
+
+  const hours = date.getHours().toString().padStart(2, '0'); // Ensure two digits
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+  const year = date.getFullYear();
+
+  return `${hours}:${minutes} ${day}/${month}/${year}`;
 }
 
 usernamePage.addEventListener("submit", connect, true);
