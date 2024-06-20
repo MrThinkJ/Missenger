@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="css/auth.css" />
+  </head>
+  <body>
+    <div class="user-form" id="username-page">
+      <h2 id="title">Login</h2>
+      <form id="usernameForm">
+        <label for="nickname">Nickname:</label>
+        <input type="text" id="nickname" name="nickname" required />
+        <label for="password">Password:</label>
+        <input type="text" id="password" name="password" required />
+        <button id="login-btn" type="submit">Enter Chatroom</button>
+      </form>
+      <div class="change-link">
+        <p>Register ?</p>
+      </div>
+    </div>
+    <script src="js/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </body>
+</html>

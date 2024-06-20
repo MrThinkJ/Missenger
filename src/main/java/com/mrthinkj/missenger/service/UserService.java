@@ -5,7 +5,7 @@ import com.mrthinkj.missenger.entity.User;
 import java.util.List;
 
 public interface UserService {
-    void saveUser(User user);
-    void disconnectUser(User user);
+    void activeUser(User user);
+    void unActiveUser(User user);
     List<User> getAllConnectedUser();
 }

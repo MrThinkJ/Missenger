@@ -15,13 +15,18 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     @Override
-    public void saveUser(User user) {
+    public void activeUser(User loginUser) {
+        User user = userRepository.findByNickname(loginUser.getNickname());
+        if (user == null)
+            throw new RuntimeException(String.format("User with nickname %s does not exist", loginUser.getNickname()));
+        if (!user.getPassword().equals(loginUser.getPassword()))
+            throw new RuntimeException("Password incorrect");
         user.setStatus(Status.ONLINE);
         userRepository.save(user);
     }
 
     @Override
-    public void disconnectUser(User user) {
+    public void unActiveUser(User user) {
         var optionalUser = userRepository.findById(user.getId())
                 .orElse(null);
         if (optionalUser != null){
