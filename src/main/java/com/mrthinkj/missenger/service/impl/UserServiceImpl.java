@@ -39,4 +39,12 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllConnectedUser() {
         return userRepository.findAllByStatus(Status.ONLINE);
     }
+
+    @Override
+    public boolean isUserOnline(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        if (user == null)
+            throw new RuntimeException(String.format("User with nickname %s does not exist", nickname));
+        return user.getStatus() == Status.ONLINE;
+    }
 }

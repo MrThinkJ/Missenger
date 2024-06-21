@@ -1,5 +1,6 @@
 "use strict";
-
+const PORT = 8088;
+const body = document.body;
 const container = document.querySelector(".container");
 const chatList = document.querySelector(".chat-list");
 const chatParent = document.querySelector(".chat-history");
@@ -8,18 +9,18 @@ const chatMessageForm = document.querySelector(".chat-message");
 const messageInput = document.querySelector(".message-input");
 const chatName = document.querySelector(".chat-name");
 const chatImg = document.querySelector(".chat-img");
+let requestId = null;
+let callRequestId = null;
+let isCalled = false;
 
 let stompClient = null;
 let nickname = null;
 let password = null;
-let fullname = null;
 let selectedUser = null;
 
 function init() {
   nickname = localStorage.getItem("nickname");
   password = localStorage.getItem("password");
-  console.log(nickname);
-  console.log(password);
   if (!nickname || !password) {
     window.location = "auth.html";
     return;
@@ -32,6 +33,7 @@ function init() {
 function onConnected() {
   stompClient.subscribe(`/user/${nickname}/queue/messages`, onMessageReceived);
   stompClient.subscribe("/topic/public", onNewUserConnected);
+  stompClient.subscribe(`/user/${nickname}/queue/callRequest`, onCallRequest);
   stompClient.send(
     "/app/user.addUser",
     {},
@@ -39,6 +41,148 @@ function onConnected() {
   );
 }
 
+function onCallRequest(payload) {
+  const message = JSON.parse(payload.body);
+  const status = message.status;
+  switch (status) {
+    case "request":
+      handleCallRequest(payload);
+      break;
+    case "accept":
+      handleAcceptRequest(payload);
+      break;
+    case "deny":
+      handleDenyRequest(payload);
+      break;
+    case "quit":
+      handleQuit(payload);
+      break;
+  }
+}
+
+function handleCallRequest(payload) {
+  const message = JSON.parse(payload.body)
+  if (callRequestId) {
+    stompClient.send(
+      `/user/${message.sender}/queue/callRequest`,
+      {},
+      JSON.stringify({
+        sender: nickname,
+        receiver: message.sender,
+        status: "deny",
+      })
+    );
+    return;
+  }
+  callRequestId = message.sender;
+  const callRequestDiv = document.createElement("div");
+  callRequestDiv.classList.add("call-request");
+  callRequestDiv.innerHTML = `
+    <p>${message.sender}</p>
+    <div class="btn">
+      <button class="accept-btn">Accept</button>
+      <button class="deny-btn">Deny</button>
+    </div>
+  `;
+  container.classList.add("blur");
+  body.appendChild(callRequestDiv);
+  const acceptBtn = document.querySelector(".accept-btn");
+  const denyBtn = document.querySelector(".deny-btn");
+  acceptBtn.addEventListener("click", acceptCall);
+  denyBtn.addEventListener("click", denyCall);
+}
+
+function handleAcceptRequest() {
+  localStorage.setItem("type", "offer");
+  localStorage.setItem("call", requestId);
+  window.open(
+    "https://" + window.location.hostname + ":" + PORT + "/videocall.html"
+  );
+}
+
+function handleDenyRequest(payload) {
+  requestId = null;
+  const callDiv = document.querySelector(".call-request");
+  if (callDiv) {
+    document.body.removeChild(callDiv);
+    container.classList.remove("blur");
+  }
+}
+
+function handleQuit(payload) {
+  const callDiv = document.querySelector(".call-request");
+  if (callDiv) {
+    document.body.removeChild(callDiv);
+    container.classList.remove("blur");
+  }
+}
+
+function makeCall() {
+  const callDiv = document.createElement("div");
+  callDiv.classList.add("call-request");
+  callDiv.innerHTML = `
+    <p>${selectedUser}</p>
+    <div class="btn">
+      <button class="quit-btn">quit</button>
+    </div>
+  `;
+  document.body.appendChild(callDiv);
+  stompClient.send(
+    `/app/call`,
+    {},
+    JSON.stringify({
+      sender: nickname,
+      receiver: selectedUser,
+      status: "request",
+    })
+  );
+  requestId = selectedUser;
+  container.classList.add("blur");
+  document.querySelector(".quit-btn").addEventListener("click", quitCall);
+}
+
+function acceptCall() {
+  stompClient.send(
+    `/user/${callRequestId}/queue/callRequest`,
+    {},
+    JSON.stringify({
+      sender: nickname,
+      receiver: callRequestId,
+      status: "accept",
+    })
+  );
+  localStorage.setItem("type", "answer");
+  localStorage.setItem("call", callRequestId);
+  window.open(
+    "https://" + window.location.hostname + ":" + PORT + "/videocall.html"
+  );
+}
+
+function denyCall() {
+  stompClient.send(
+    `/user/${callRequestId}/queue/callRequest`,
+    {},
+    JSON.stringify({
+      sender: nickname,
+      receiver: payload.sender,
+      status: "deny",
+    })
+  );
+  const callDiv = document.querySelector(".call-request");
+  if (callDiv) {
+    document.body.removeChild(callDiv);
+  }
+  container.classList.remove("blur");
+  callRequestId = null;
+}
+
+function quitCall(){
+  const callDiv = document.querySelector(".call-request");
+  if (callDiv){
+    document.body.removeChild(callDiv);
+    document.body.classList.remove("blur");
+  }
+}
 function onError() {
   console.error("Some error happened");
 }
@@ -94,6 +238,11 @@ function userClick(event) {
     .querySelectorAll(".user-item")
     .forEach((item) => item.classList.remove("active"));
   chatMessageForm.classList.remove("hidden");
+  const callDiv = document.querySelector(".call-btn");
+  callDiv.classList.remove("hidden");
+  const callBtn = callDiv.querySelector("button");
+  callBtn.addEventListener("click", makeCall);
+
   const curSelectedUser = event.currentTarget;
   curSelectedUser.classList.add("active");
   const newMessageNoti = curSelectedUser.getElementsByClassName("new-message");

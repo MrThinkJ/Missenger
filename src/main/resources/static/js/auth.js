@@ -1,7 +1,8 @@
 const changeLink = document.querySelector(".change-link");
 const userForm = document.getElementById("usernameForm");
 let registerButton;
-
+loginButton = document.getElementById("login-btn");
+loginButton.addEventListener("click", login);
 function changeForm() {
   const title = document.getElementById("title");
   if (title.innerHTML === "Login") {

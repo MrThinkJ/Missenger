@@ -308,5 +308,68 @@ body {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+.call-btn {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.call-btn button {
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
+}
+
+.call-request {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #370685b2;
+  color: #fff;
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+}
+
+.call-request p {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.call-request .btn {
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.call-request .btn .accept-btn {
+  width: 70px;
+  border: none;
+  border-radius: 5px;
+  background-color: #10d631;
+  margin-right: 10px;
+}
+
+.call-request .btn .deny-btn {
+  width: 70px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f13434;
+  color: #fff;
+}
+
+.call-request .btn .quit-btn {
+  width: 70px;
+  border: none;
+  border-radius: 5px;
+  background-color: #c80036;
+}
+
+.blur {
+  filter: blur(5px);
 }

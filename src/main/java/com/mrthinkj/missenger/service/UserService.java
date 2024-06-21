@@ -8,4 +8,5 @@ public interface UserService {
     void activeUser(User user);
     void unActiveUser(User user);
     List<User> getAllConnectedUser();
+    boolean isUserOnline(String nickname);
 }

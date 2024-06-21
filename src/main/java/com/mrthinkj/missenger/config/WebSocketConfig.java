@@ -1,13 +1,12 @@
 package com.mrthinkj.missenger.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mrthinkj.missenger.handler.SocketHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.*;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.*;
 
 import java.util.List;
 
@@ -40,4 +39,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
     }
+
+//    @Override
+//    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+//        registry.addHandler(new SocketHandler(), "/socket")
+//                .setAllowedOrigins("*");
+//    }
 }
