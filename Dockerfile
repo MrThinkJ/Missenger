@@ -2,7 +2,7 @@ FROM maven:3-openjdk-17 AS build
 COPY pom.xml /app/
 COPY src /app/src/
 WORKDIR /app
-RUN mvn clean package-DskipTests
+RUN mvn clean package -DskipTests
 
 FROM openjdk:20-jdk
 WORKDIR /app
