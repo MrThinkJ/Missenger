@@ -6,7 +6,7 @@ spring:
       database: ${DB_NAME:missenger}
       username: ${DB_USERNAME:root}
       password: ${DB_PASSWORD:root}
-
+      authentication-database: admin
 server:
   port: ${SERVER_PORT:8088}
   ssl:
