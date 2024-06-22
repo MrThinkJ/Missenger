@@ -71,7 +71,9 @@ function setUpPeerConnection() {
 
   peerConnection.addEventListener("track", async (event) => {
     const [remoteStream] = event.streams;
+    console.log("Before add");
     remoteView.srcObject = remoteStream;
+    console.log("After add")
   });
 }
 
@@ -181,6 +183,7 @@ function handleIce(signal) {
     peerConnection
       .addIceCandidate(new RTCIceCandidate(signal.data))
       .catch((err) => console.error(err));
+      remoteView.srcObject = remoteStream;
   }
 }
 
