@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      host: ${DB_HOST:localhost}
+      host: ${DB_HOST:mongo}
       port: ${DB_PORT:27017}
       database: ${DB_NAME:missenger}
       username: ${DB_USERNAME:root}

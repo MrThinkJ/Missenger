@@ -3,6 +3,7 @@ let dataChannel = null;
 const nickname = localStorage.getItem("nickname");
 const callId = localStorage.getItem("call");
 let stompClient = null;
+let isReceiveOffer = false;
 const PORT = 8088;
 const constraints = {
   video: true,
@@ -11,6 +12,7 @@ const constraints = {
 const configuration = {
   iceServers: [{ urls: "stun:stun2.1.google.com:19302" }],
 };
+const type = localStorage.getItem("type");
 let localStream = null;
 const selfView = document.getElementById("selfView");
 const remoteView = document.getElementById("remoteView");
@@ -68,23 +70,31 @@ function setUpPeerConnection() {
   });
 
   peerConnection.addEventListener("track", async (event) => {
-    console.log("Track: "+event);
     const [remoteStream] = event.streams;
-    console.log(remoteStream);
     remoteView.srcObject = remoteStream;
   });
 }
 
 function onConnected() {
   stompClient.subscribe(`/user/${nickname}/queue/call`, onMessageReceived);
-  const type = localStorage.getItem("type");
-  if (type === "answer"){
-      send(JSON.stringify({
-          type: "ready",
-          sender: nickname,
-          receiver: callId
-      }))
-  }
+  loopWhenReady();
+}
+
+function loopWhenReady(){
+    if (!isReceiveOffer){
+        createReadyMessage();
+        setTimeout(loopWhenReady, 1000);
+    }
+}
+
+function createReadyMessage(){
+    if (type === "answer"){
+        send(JSON.stringify({
+            type: "ready",
+            sender: nickname,
+            receiver: callId
+        }))
+    }
 }
 
 function onError(err){
@@ -132,6 +142,7 @@ function createOffer() {
 }
 
 function handleOffer(signal) {
+    isReceiveOffer = true;
   peerConnection
     .setRemoteDescription(new RTCSessionDescription(signal.data))
     .then(() => {
