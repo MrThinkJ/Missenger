@@ -4,6 +4,8 @@ spring:
       host: ${DB_HOST:localhost}
       port: ${DB_PORT:27017}
       database: ${DB_NAME:missenger}
+      username: ${DB_USERNAME:root}
+      password: ${DB_PASSWORD:root}
 
 server:
   port: ${SERVER_PORT:8088}

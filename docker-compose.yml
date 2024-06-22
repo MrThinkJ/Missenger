@@ -5,10 +5,12 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongo:/data
+      - /opt/mongo_data:/var/lib/mongo
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
+    networks:
+      springboot-mongo-net:
   mongo-express:
     image: mongo-express
     container_name: mongo_express
@@ -21,5 +23,26 @@ services:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=root
       - ME_CONFIG_MONGODB_ADMINPASSWORD=root
       - ME_CONFIG_MONGODB_SERVER=mongodb
+  missenger:
+    container_name: missenger
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+    restart: on-failure
+    ports:
+      - 8088:8088
+    environment:
+      - DB_HOST=mongo-db
+      - DB_PORT=27017
+      - DB_NAME=missenger
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - SERVER_PORT=8088
+    networks:
+      springboot-mongo-net:
 volumes:
   mongo: {}
+networks:
+  springboot-mongo-net:
