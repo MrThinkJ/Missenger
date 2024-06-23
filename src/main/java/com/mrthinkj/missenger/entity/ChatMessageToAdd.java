@@ -1,8 +1,7 @@
 package com.mrthinkj.missenger.entity;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
@@ -11,14 +10,11 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document
-public class ChatMessage {
-    @Id
-    private String id;
+public class ChatMessageToAdd {
     private String chatId;
     private String content;
     private String senderId;
     private String recipientId;
-    private String image;
+    private MultipartFile image;
     private Date timestamp;
 }

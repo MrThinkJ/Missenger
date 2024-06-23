@@ -183,7 +183,6 @@ function handleIce(signal) {
     peerConnection
       .addIceCandidate(new RTCIceCandidate(signal.data))
       .catch((err) => console.error(err));
-      remoteView.srcObject = remoteStream;
   }
 }
 

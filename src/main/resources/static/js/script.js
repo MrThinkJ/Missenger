@@ -61,7 +61,7 @@ function onCallRequest(payload) {
 }
 
 function handleCallRequest(payload) {
-  const message = JSON.parse(payload.body)
+  const message = JSON.parse(payload.body);
   if (callRequestId) {
     stompClient.send(
       `/user/${message.sender}/queue/callRequest`,
@@ -176,9 +176,9 @@ function denyCall() {
   callRequestId = null;
 }
 
-function quitCall(){
+function quitCall() {
   const callDiv = document.querySelector(".call-request");
-  if (callDiv){
+  if (callDiv) {
     document.body.removeChild(callDiv);
     document.body.classList.remove("blur");
   }
@@ -265,7 +265,7 @@ async function fetchAndDisplayMessage() {
 }
 
 function displayMessage(message) {
-  let messageHTML = "";
+  let messageHTML;
   let messageLi = document.createElement("li");
   messageLi.classList.add("clearfix");
   if (message.senderId === nickname) {
@@ -298,18 +298,26 @@ function displayMessage(message) {
 function sendMessage(event) {
   event.preventDefault();
   const messageContent = messageInput.value.trim();
-  const messageObject = {
-    chatId: `${nickname}_${selectedUser}`,
-    content: messageContent,
-    senderId: nickname,
-    recipientId: selectedUser,
-    timestamp: Date.now(),
-  };
-  const message = JSON.stringify(messageObject);
-  stompClient.send("/app/chat", {}, message);
-  displayMessage(messageObject);
-  chatParent.scrollTop = chatParent.scrollHeight;
-  messageInput.value = "";
+  const image = document.querySelector("#image-file").files[0];
+  let formData = new FormData();
+  formData.append("chatId", `${nickname}_${selectedUser}`);
+  formData.append("content", messageContent);
+  formData.append("senderId", nickname);
+  formData.append("recipientId", selectedUser);
+  formData.append("timestamp", Date.now().toString());
+  formData.append("image", image);
+  axios.post('/chat', formData,{
+    headers:{
+      "Content-Type": "multipart/form-data"
+    }
+  }).then(res=>{
+    console.log(res);
+    const messageObject = JSON.parse(res.data);
+    displayMessage(messageObject);
+    chatParent.scrollTop = chatParent.scrollHeight;
+    messageInput.value = "";
+  }).catch(err=>console.error("Upload error: "+err));
+
 }
 
 function formatTimestamp(timestamp) {

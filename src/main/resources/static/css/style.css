@@ -219,15 +219,6 @@ body {
   padding: 20px;
 }
 
-.input-group button {
-  border: none;
-  padding: 0 12px;
-  border-radius: 50%;
-  margin-left: 10px;
-  background-color: #102c57;
-  color: #fff;
-}
-
 .online,
 .offline,
 .me {
@@ -372,4 +363,41 @@ body {
 
 .blur {
   filter: blur(5px);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.input-group {
+  align-items: center;
+}
+
+.input-group button {
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-left: 10px;
+  background-color: #102c57;
+  color: #fff;
+}
+
+.custom-image-upload {
+  cursor: pointer;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  width: 30px;
+  height: 30px;
+  background-color: #102c57;
+  color: #fff;
+  margin-bottom: 0;
+  margin-right: 10px;
 }
