@@ -1,6 +1,7 @@
 package com.mrthinkj.missenger.service.impl;
 
 import com.mrthinkj.missenger.service.StorageService;
+import lombok.AllArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -16,6 +17,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class StorageServiceImpl implements StorageService {
     private final Path root = Paths.get("uploads");
     @Override

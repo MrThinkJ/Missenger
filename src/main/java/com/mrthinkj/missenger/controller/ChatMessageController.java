@@ -47,7 +47,7 @@ public class ChatMessageController {
         return ResponseEntity.ok(chatMessageService.findChatMessage(senderId, recipientId));
     }
 
-    @GetMapping("/{filename:.+}")
+    @GetMapping("/images/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename){
         Resource image = storageService.get(filename);
         return ResponseEntity.ok()
