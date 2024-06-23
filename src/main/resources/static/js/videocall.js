@@ -4,6 +4,7 @@ const nickname = localStorage.getItem("nickname");
 const callId = localStorage.getItem("call");
 let stompClient = null;
 let isReceiveOffer = false;
+let remoteStream = null;
 const PORT = 8088;
 const constraints = {
   video: true,
@@ -65,15 +66,21 @@ function setUpPeerConnection() {
       console.log("On datachannel message: " + event.data);
     };
   };
+    peerConnection.oniceconnectionstatechange = (e) => {
+        console.log("ICE connection state change:", peerConnection.iceConnectionState);
+        if (peerConnection.iceConnectionState === "connected"){
+            remoteView.srcObject = remoteStream;
+            remoteView.play().catch(e => console.error("Error playing remote stream:", e));
+        }
+    };
   localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
   });
 
   peerConnection.addEventListener("track", async (event) => {
-    const [remoteStream] = event.streams;
-    console.log("Before add");
+    [remoteStream] = event.streams;
     remoteView.srcObject = remoteStream;
-    console.log("After add")
+      remoteView.play().catch(e => console.error("Error playing remote stream:", e));
   });
 }
 
