@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -25,15 +26,17 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         String user_2 = chatMessageToAdd.getRecipientId();
         var chatId = chatRoomService.getChatRoomId(user_1, user_2, true)
                 .orElseThrow(()-> new RuntimeException("Can not find or create chatroom for this two user"));
-        String imageName = storageService.save(chatMessageToAdd.getImage());
         ChatMessage chatMessage = ChatMessage.builder()
                 .senderId(chatMessageToAdd.getSenderId())
                 .recipientId(chatMessageToAdd.getRecipientId())
                 .content(chatMessageToAdd.getContent())
-                .timestamp(chatMessageToAdd.getTimestamp())
-                .image(imageName)
+                .timestamp(new Date(Long.parseLong(chatMessageToAdd.getTimestamp())))
                 .chatId(chatId)
                 .build();
+        if (chatMessageToAdd.getImage()!= null){
+            String imageName = storageService.save(chatMessageToAdd.getImage());
+            chatMessage.setImage(imageName);
+        }
         chatMessageRepository.save(chatMessage);
         return chatMessage;
     }

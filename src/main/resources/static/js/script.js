@@ -9,6 +9,8 @@ const chatMessageForm = document.querySelector(".chat-message");
 const messageInput = document.querySelector(".message-input");
 const chatName = document.querySelector(".chat-name");
 const chatImg = document.querySelector(".chat-img");
+const imageFile = document.querySelector("#image-file");
+const imagePreview = document.querySelector(".image-preview");
 let requestId = null;
 let callRequestId = null;
 let isCalled = false;
@@ -246,8 +248,6 @@ function userClick(event) {
   const curSelectedUser = event.currentTarget;
   curSelectedUser.classList.add("active");
   const newMessageNoti = curSelectedUser.getElementsByClassName("new-message");
-  console.log(curSelectedUser);
-  console.log(newMessageNoti);
   if (newMessageNoti.length > 0) {
     curSelectedUser.removeChild(curSelectedUser.lastElementChild);
   }
@@ -278,6 +278,19 @@ function displayMessage(message) {
         <div class="message my-message float-right">
             ${message.content}
         </div>
+        ${
+          message.image != null
+            ? `
+                <div class="message-image">
+                  <img
+                    src="${message.image}"
+                    alt=""
+                    class="float-right"
+                  />
+                </div>
+              `
+            : ""
+        }
       `;
   } else {
     messageHTML = `
@@ -289,6 +302,19 @@ function displayMessage(message) {
         <div class="message other-message">
             ${message.content}
         </div>
+        ${
+          message.image != null
+            ? `
+                <div class="message-image">
+                  <img
+                    src="/images/${message.image}"
+                    alt=""
+                    class=""
+                  />
+                </div>
+              `
+            : ""
+        }
       `;
   }
   messageLi.innerHTML = messageHTML;
@@ -305,19 +331,53 @@ function sendMessage(event) {
   formData.append("senderId", nickname);
   formData.append("recipientId", selectedUser);
   formData.append("timestamp", Date.now().toString());
-  formData.append("image", image);
-  axios.post('/chat', formData,{
-    headers:{
-      "Content-Type": "multipart/form-data"
-    }
-  }).then(res=>{
-    console.log(res);
-    const messageObject = JSON.parse(res.data);
-    displayMessage(messageObject);
-    chatParent.scrollTop = chatParent.scrollHeight;
-    messageInput.value = "";
-  }).catch(err=>console.error("Upload error: "+err));
+  if (image !== undefined) formData.append("image", image);
+  axios
+    .post("/chat", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      const messageObject = res.data;
+      displayMessage(messageObject);
+      chatParent.scrollTop = chatParent.scrollHeight;
+      messageInput.value = "";
+    })
+    .catch((err) => console.error("Upload error: " + err));
+  cancelImage();
+}
 
+function previewImage() {
+  const previewDiv = document.createElement("div");
+  previewDiv.innerHTML = `
+      <div class="preview">
+        <img
+          src=""
+          class="image-preview"
+          alt=""
+        />
+        <div class="cancel"><i class="fa-solid fa-xmark"></i></div>
+      </div>
+  `;
+  chatMessageForm.appendChild(previewDiv);
+  const image = document.querySelector("#image-file").files[0];
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const imageData = e.target.result;
+    const imagePreview = document.querySelector(".image-preview");
+    imagePreview.src = imageData;
+  };
+  document.querySelector(".cancel").addEventListener("click", cancelImage);
+  reader.readAsDataURL(image);
+}
+
+function cancelImage() {
+  document.querySelector("#image-file").value = "";
+  const previewDiv = document.querySelector(".preview").parentNode;
+  if (previewDiv) {
+    previewDiv.remove();
+  }
 }
 
 function formatTimestamp(timestamp) {
@@ -334,3 +394,4 @@ function formatTimestamp(timestamp) {
 
 window.onload = init;
 chatMessageForm.addEventListener("submit", sendMessage, true);
+imageFile.addEventListener("change", previewImage);

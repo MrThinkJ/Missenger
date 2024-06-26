@@ -16,5 +16,5 @@ public class ChatMessageToAdd {
     private String senderId;
     private String recipientId;
     private MultipartFile image;
-    private Date timestamp;
+    private String timestamp;
 }

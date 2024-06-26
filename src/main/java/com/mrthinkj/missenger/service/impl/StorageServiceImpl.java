@@ -40,7 +40,7 @@ public class StorageServiceImpl implements StorageService {
         } catch (IOException e){
             throw new RuntimeException("Could not save this file");
         }
-        return fileName;
+        return filePath;
     }
 
     @Override
